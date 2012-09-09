@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>AskSomeone.it</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <h1>AskSomeone.it</h1>
+    <div id="error"><h2></h2></div>
+    <div id="feedback"></div>
+    <form id="question-form">
+      <input type="text" id="question-input" autofocus="true" placeholder="Ask a question..."></input>
+      <input type="button" value="Send question" id="send-q"></input> 
+    </form>
+    
+    <form id="answer-form" hidden="true">
+      <h3 id="question-to-answer"></h3>
+      <input type="text" id="answer-input" placeholder="Write your answer here"></input>
+      <input type="button" value="Send answer" id="send-a"></input> 
+    </form>
+    
+    
+    <div id="resultpane" hidden="true">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Your question</th>
+            <th>Their question</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Question</td>
+            <td id="cell-yq"></td>
+            <td id="cell-tq"></td>
+          </tr>
+          <tr>
+            <td>Answer</td>
+            <td id="cell-yqa"></td>
+            <td id="cell-tqa"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    
+    <script>
+    
+      $(function(){
+        var socket = io.connect();
+        var question;
+        var userid;
+        
+        if (localStorage) {
+          if (localStorage.getItem("userid")) {
+            userid = localStorage.getItem("userid");
+            socket.emit("id", userid);
+          } else {
+            socket.emit("idrequest", "ls");
+            socket.on("id", function(id) {
+              userid = id;
+              localStorage.setItem("userid", userid);
+            });
+          }
+        }
+      
+      
+        $('#question-form').submit(sqhandler);
+        $('#send-q').click(sqhandler);
+        function sqhandler(event) {
+          event.preventDefault();
+          socket.emit("question", $('#question-input').val());
+          $('#question-form').hide();
+          $('#feedback').html("Finding a partner...");
+        }
+        
+        socket.on("question", function (q) {
+          $('#feedback').html("Please answer your partner's question:");
+          question = JSON.parse(q);
+          $('#question-to-answer').text(question.text);
+          $('#answer-form').show();
+          
+          
+          $('#answer-form').submit(sahandler);
+          $('#send-a').click(sahandler);
+        });
+        var sentqa;
+        var recievedqa;
+        var sent = false;
+        function sahandler(event) {
+          event.preventDefault();
+          var anstext = $('#answer-input').val();
+          var qa = {"question": question, "answer": {"text": anstext, "answerer": {"userid": userid}}};
+          sentqa = qa;
+          var qapair = JSON.stringify(qa);
+          socket.emit("answer", qapair);
+          $('#answer-form').hide();
+          $('#feedback').html("Waiting for their answer...");
+          if (sent) {
+            displayResults(sentqa, recievedqa);
+          }
+          sent = true;
+        }
+        
+        socket.on("answer", function(qapair) {
+          recievedqa = JSON.parse(qapair);
+          if (sent == false) {
+            $('#feedback').html("The other person has answered. Hurry up!");
+            sent = true;
+          } else {
+            displayResults(sentqa, recievedqa);
+          }
+        });
+        
+        
+        function displayResults(sent, recieved) {
+          $('#feedback').html("");
+          $('#cell-yq').text(recieved.question.text);
+          $('#cell-yqa').text(recieved.answer.text);
+          $('#cell-tq').text(sent.question.text);
+          $('#cell-tqa').text(sent.answer.text);
+          $('#resultpane').show();
+        }
+        
+        socket.on("error", function(errormessage) {
+          $('#error>h2').text(errormessage);
+        });
+      });
+      
+      
+      
+      
+      
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "asksomeone.it",
+  "version": "0.0.1",
+  "dependencies": {
+    "redis":          "0.7.2",
+    "socket.io":      "0.9.10",
+    "node-static":    "0.6.1",
+    "validator": "0.4.11"
+  }
+}
