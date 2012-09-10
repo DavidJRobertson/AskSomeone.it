@@ -130,11 +130,13 @@ $(function() {
     $('#hint').html(errormessage);
     $('#error_retry_button').slideDown();
     
-    $(document).keypress(function(event) {
-      if (((event.keyCode || event.which) == 13) && !event.shiftKey) {
-        reset_app();
-      }
-    });
+    // TODO: fix this...
+    //$(document).keypress(function(event) {
+    //  if (((event.keyCode || event.which) == 13) && !event.shiftKey) {
+    //    reset_app();
+    //  }
+    //});
+    
   });
   
   $('#input_textfield_ask').focus();
