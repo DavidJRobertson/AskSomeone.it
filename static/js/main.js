@@ -92,7 +92,8 @@ $(function() {
 	
 	socket.on("answer", function(qapair) {
     recievedqa = JSON.parse(qapair);
-    console.log(qapair);
+    
+    
     if (sent == false) {
       $('#hint').html(LANG_HINT_HURRY_ANSWER + "<br />" + question.text);
       sent = true;
