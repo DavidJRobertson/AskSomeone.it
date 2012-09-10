@@ -43,9 +43,11 @@ $(function() {
 	// when the ASK button is pressed, submit the thing. christ I'm tired
 	$('#input_button_ask').click(handle_question_submit);
 	$('#input_textfield_ask').submit(handle_question_submit);
+  $('form#ask').submit(function(e){ e.preventDefault(); });
 	
 	$('#input_button_answer').click(handle_answer_submit);
 	$('#input_textfield_answer').submit(handle_answer_submit);
+	$('form#answer').submit(function(e){ e.preventDefault() });
 	
 	function handle_question_submit(event) {
 	  event.preventDefault();
@@ -65,7 +67,6 @@ $(function() {
 	
 	function handle_answer_submit(event) {
   	event.preventDefault();
-  	
 		$('#answer').slideUp(function() {
       sentqa = {"question": question, "answer": {"text": $('#input_textfield_answer').val(), "answerer": {"userid": userid}}};
       var qapair = JSON.stringify(sentqa);
