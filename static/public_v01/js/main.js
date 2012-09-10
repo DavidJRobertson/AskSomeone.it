@@ -8,7 +8,7 @@ $(function() {
 	// basic site functions
 	// 'show the rules' button
 	$('#show_the_rules').click(function() {
-		$('#rules').toggle();
+		$('#rules').slideToggle();
 	});
 	// main text input focusing/blurring (there's a jQuery plugin for this somewhere..)
 	$('#input_textfield_ask').focus(function() {
