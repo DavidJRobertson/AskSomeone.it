@@ -15,11 +15,13 @@ var file = new(static.Server)(webroot, {
 
 io.set('log level', 1);
 
-
-
 rc.on("error", function (err) {
   console.log("Error " + err);
 });
+
+
+rc.setnx("useridmax", "0"); // Used for assigning user ids. If first run, set to 0.
+
 
 app.listen(8080);
 
@@ -47,7 +49,7 @@ io.sockets.on('connection', function (socket){
   socket.on("id", function(id){
     try {
     userid = sanitize(id).toInt();
-    check(userid).len(5, 20);
+    check(userid).len(1, 20);
     console.log("New connection from user " + userid);
     } catch (e) {
       socket.emit("error", "An internal error has occurred :( Please try again.");
@@ -55,9 +57,16 @@ io.sockets.on('connection', function (socket){
   });
   
   socket.on("idrequest", function(){
-    userid = Math.floor(Math.random() * 324135143); // TODO: make this better
-    socket.emit("id", userid);
-    console.log("New ID request, issued id = " + userid);
+    try {
+    rc.incr("useridmax", function(error, n) {
+      userid = n;
+      socket.emit("id", userid);
+      console.log("New ID request, issued id = " + userid);
+    });
+    } catch (e) {
+      socket.emit("error", "An internal error occurred. Please refresh the page (not button below!)");
+      console.log("Error: " + e.message);
+    }
   });
   
   socket.on("question", function (data){
