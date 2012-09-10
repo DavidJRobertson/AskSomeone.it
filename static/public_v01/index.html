@@ -32,18 +32,29 @@
                 </nav>
             </header>
         </div>
-
         <div class="main-container">
         	<div class="main app-container">
         		<h1>Ask questions to strangers!</h1>
+				<div id="hint">Type a question below and hit <strong>Ask!</strong> - a random stranger will answer it!</div>
+        		<!-- ASK FORM -->
         		<form id="ask">
-        			<div id="hint">Type a question below and hit <strong>Ask!</strong> - a random stranger will answer it!</div>
-        			<div id="input_wrapper_ask" class="input_wrapper">
+       				<div id="input_wrapper_ask" class="input_wrapper">
         				<div id="input_text_ask" class="input_text">
         					<input type="text" value="Ask any question..." id="input_textfield_ask" class="inactive"></input>
         				</div>
         				<div id="input_submit_ask" class="input_submit">        			
         					<button id="input_button_ask" class="input_button">Ask!</button>
+        				</div>
+        			</div>
+        		</form>
+        		<!-- ANSWER FORM -->
+        		<form id="answer" style="display:none;">	
+        			<div id="input_wrapper_answer" class="input_wrapper">
+        				<div id="input_text_answer" class="input_text">
+        					<input type="text" value="Enter your answer here..." id="input_textfield_answer" class="inactive"></input>
+        				</div>
+        				<div id="input_submit_answer" class="input_submit">        			
+        					<button id="input_button_answer" class="input_button">Answer!</button>
         				</div>
         			</div>
         		</form>
@@ -59,6 +70,9 @@
         			</ul>
         		</div>
         	</div>
+        	<div id="ads-top">
+        		<div id="ad_01" class="ad_landscape" style="width: 728px; height: 90px; background-color: black; margin: 20px auto 20px auto;"></div>
+       		</div>
             <div class="main wrapper clearfix">
                 <article>
                     <header>
@@ -73,6 +87,9 @@
             <footer class="wrapper">
                 <small>You must be at least 13 years of age to use this website. View our <a href='#'>Privacy Policy</a></small>
             </footer>
+        </div>
+    	<div id="ads-bottom">
+        	<div id="ad_02" class="ad_landscape" style="width: 728px; height: 90px; background-color: black; margin: 20px auto 20px auto;"></div>
         </div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
