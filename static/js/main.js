@@ -74,35 +74,49 @@ $(function() {
       $('#hint').html(LANG_HINT_WAITING_ANSWER);
       
       if (sent) {
-        displayResults(sentqa, recievedqa);
+        display_results(sentqa, recievedqa);
       }
       sent = true;
 		});
 	}
 	
-  function displayResults(sent, recieved) {
+	socket.on("answer", function(qapair) {
+    recievedqa = JSON.parse(qapair);
+    
+    if (sent == false) {
+      $('#hint').html(LANG_HINT_HURRY_ANSWER + "<br />" + question.text);
+      sent = true;
+    } else {
+      display_results(sentqa, recievedqa);
+    }
+  });
+  
+  function display_results(sent, recieved) {
     $('#hint').html(LANG_HINT_RESULTS);
     $('#cell-yq').text(recieved.question.text);
     $('#cell-yqa').text(recieved.answer.text);
     $('#cell-tq').text(sent.question.text);
     $('#cell-tqa').text(sent.answer.text);
     $('#result_pane').slideDown();
+    
+    
+    $(document).keypress(function(event) {
+      if (((event.keyCode || event.which) == 13) && !event.shiftKey) {
+        reset_app();
+      }
+    });
   }
-	
-	
-	
-	socket.on("answer", function(qapair) {
-    recievedqa = JSON.parse(qapair);
-    
-    
-    if (sent == false) {
-      $('#hint').html(LANG_HINT_HURRY_ANSWER + "<br />" + question.text);
-      sent = true;
-    } else {
-      displayResults(sentqa, recievedqa);
-    }
-  });
-
+  
+  $('.reattemptbutton').click(reset_app);
+  function reset_app() {
+    $(document).off("keypress");
+    $('#result_pane').slideUp();
+    $('#input_textfield_ask').val("");
+    $('#input_textfield_answer').val("");
+    $('#ask').slideDown();
+    $('#hint').html(LANG_HINT_READY);
+  }
+  
 	socket.on("error", function(errormessage) {
     $('#hint').text(errormessage);
   });
