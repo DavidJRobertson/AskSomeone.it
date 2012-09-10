@@ -77,7 +77,7 @@ io.sockets.on('connection', function (socket){
 });
 
 
-setInterval(processQueue, 300);
+setInterval(processQueue, 200);
 
 function processQueue(){
   try {
@@ -87,9 +87,15 @@ function processQueue(){
         rc.rpop("questionqueue", function(error, q2r){
           q1 = JSON.parse(q1r);
           q2 = JSON.parse(q2r);
-          console.log("Pairing user " + q1.asker.userid + " with user " + q2.asker.userid);
-          io.sockets.sockets[q1.asker.socketid].emit("question", q2r);
-          io.sockets.sockets[q2.asker.socketid].emit("question", q1r);
+          if (io.sockets.sockets[q1.asker.socketid] === undefined) {
+            rc.rpush("questionqueue", q2r);
+          } else if (io.sockets.sockets[q2.asker.socketid] === undefined) {
+            rc.rpush("questionqueue", q1r);
+          } else {
+            io.sockets.sockets[q1.asker.socketid].emit("question", q2r);
+            io.sockets.sockets[q2.asker.socketid].emit("question", q1r); 
+            console.log("Pairing user " + q1.asker.userid + " with user " + q2.asker.userid);
+          }
         });
       });
     }
