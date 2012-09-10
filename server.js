@@ -12,6 +12,11 @@ var file = new(static.Server)(webroot, {
   cache: 600
 });
 
+
+io.set('log level', 1);
+
+
+
 rc.on("error", function (err) {
   console.log("Error " + err);
 });
@@ -22,7 +27,7 @@ function handler (req, res){
   req.addListener('end', function() {
     file.serve(req, res, function(err, result) {
       if (err) {
-        console.error('Error serving %s - %s', req.url, err.message);
+        //console.error('Error serving %s - %s', req.url, err.message);
         if (err.status === 404 || err.status === 500) {
           file.serveFile(util.format('/%d.html', err.status), err.status, {}, req, res);
         } else {
@@ -30,7 +35,7 @@ function handler (req, res){
           res.end();
         }
       } else {
-        console.log('%s - %s', req.url, res.message);
+        //console.log('%s - %s', req.url, res.message);
       }
     });
   });
