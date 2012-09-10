@@ -323,10 +323,17 @@ nav a:hover {
 .reattemptbutton {
   position: relative;
   top: 30px;
+  padding: 10px 20px;
 }
 .reattemptwrapper {
   padding-bottom: 35px;
 }
+
+
+#result_pane table td {
+  vertical-align: top;
+}
+
 
 /* ==========================================================================
    Media Queries
