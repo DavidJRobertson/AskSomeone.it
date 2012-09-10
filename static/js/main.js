@@ -113,6 +113,9 @@ $(function() {
     $('#result_pane').slideUp();
     $('#input_textfield_ask').val("");
     $('#input_textfield_answer').val("");
+    
+    sent = false;
+    
     $('#ask').slideDown();
     $('#hint').html(LANG_HINT_READY);
   }
