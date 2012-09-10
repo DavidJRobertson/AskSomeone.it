@@ -45,7 +45,7 @@ io.sockets.on('connection', function (socket){
     check(userid).len(5, 20);
     console.log("New connection from user " + userid);
     } catch (e) {
-      socket.emit("error", "An internal error has occurred :( Please refresh the page and try again.");
+      socket.emit("error", "An internal error has occurred :( Please try again.");
     }
   });
   
@@ -63,7 +63,7 @@ io.sockets.on('connection', function (socket){
       console.log("Quesion received from user " + userid + " question = " + qtext);
     } catch (e) {
       console.log("Invalid question submitted by user " + userid + ", question = " + qtext);
-      socket.emit("error", "That doesn't look like a valid question to us. Refresh the page and try another :P");
+      socket.emit("error", "That doesn't look like a valid question to us. Please try another :P<br /> Remember, URLs aren't allowed, and your question needs to be 5 to 100 characters long.");
     }
   });
   

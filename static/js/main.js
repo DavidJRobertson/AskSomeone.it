@@ -61,6 +61,7 @@ $(function() {
         
         $('#answer').slideDown();
     		$('#hint').html(LANG_HINT_REPLY_PROMPT + "<br />" + question.text);
+ 		    $('#input_textfield_answer').focus();
       });
 		});
 	}
@@ -108,20 +109,34 @@ $(function() {
   }
   
   $('.reattemptbutton').click(reset_app);
+  
   function reset_app() {
     $(document).off("keypress");
+    $('#error_retry_button').slideUp();
     $('#result_pane').slideUp();
     $('#input_textfield_ask').val("");
+
     $('#input_textfield_answer').val("");
     
     sent = false;
     
     $('#ask').slideDown();
     $('#hint').html(LANG_HINT_READY);
+    
+    $('#input_textfield_ask').focus();
   }
   
 	socket.on("error", function(errormessage) {
-    $('#hint').text(errormessage);
+    $('#hint').html(errormessage);
+    $('#error_retry_button').slideDown();
+    
+    $(document).keypress(function(event) {
+      if (((event.keyCode || event.which) == 13) && !event.shiftKey) {
+        reset_app();
+      }
+    });
   });
+  
+  $('#input_textfield_ask').focus();
 });
 
