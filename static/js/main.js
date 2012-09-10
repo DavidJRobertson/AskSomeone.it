@@ -49,13 +49,22 @@ $(function() {
 	$('#input_textfield_answer').submit(handle_answer_submit);
 	$('form#answer').submit(function(e){ e.preventDefault() });
 	
+	var invitetimer;
 	function handle_question_submit(event) {
 	  event.preventDefault();
 		// slide away the input area thing
 		$('#ask').slideUp(function() {
 			$('#hint').html(LANG_HINT_FINDING_PARTNER);
       socket.emit("question", $('#input_textfield_ask').val());
+      invitetimer = setTimeout(function(){
+        $('#invite_friends_pane').slideDown();
+      }, 20000);
+      
+      
       socket.on("question", function (q) {
+        clearTimeout(invitetimer);
+        $('#invite_friends_pane').slideUp();
+        
         question = JSON.parse(q);
         //$('#question-to-answer').text(question.text);
         
@@ -127,6 +136,9 @@ $(function() {
   }
   
 	socket.on("error", function(errormessage) {
+	  clearTimeout(invitetimer);
+    $('#invite_friends_pane').slideUp();
+	  
     $('#hint').html(errormessage);
     $('#error_retry_button').slideDown();
     
