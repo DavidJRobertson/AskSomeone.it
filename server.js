@@ -58,7 +58,7 @@ io.sockets.on('connection', function (socket){
   socket.on("question", function (data){
     try {
       var qtext = sanitize(data).xss();
-      check(qtext).len(5, 100).notEmpty().notContains("http://").notContains("https://");
+      check(qtext).len(5, 100).notEmpty().not('Ask any question...').notContains("http://").notContains("https://");
       rc.lpush("questionqueue", JSON.stringify({"text": qtext, "asker": {"userid": userid, "socketid": socket.id}}));
       console.log("Quesion received from user " + userid + " question = " + qtext);
     } catch (e) {
