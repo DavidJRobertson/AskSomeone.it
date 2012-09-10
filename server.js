@@ -72,12 +72,12 @@ io.sockets.on('connection', function (socket){
   socket.on("question", function (data){
     try {
       var qtext = sanitize(data).xss();
-      check(qtext).len(5, 100).notEmpty().not('Ask any question...').notContains("http://").notContains("https://");
+      check(qtext).len(5, 140).notEmpty().not('Ask any question...').notContains("http://").notContains("https://");
       rc.lpush("questionqueue", JSON.stringify({"text": qtext, "asker": {"userid": userid, "socketid": socket.id}}));
       console.log("Quesion received from user " + userid + " question = " + qtext);
     } catch (e) {
       console.log("Invalid question submitted by user " + userid + ", question = " + qtext);
-      socket.emit("error", "That doesn't look like a valid question to us. Please try another :P<br /> Remember, URLs aren't allowed, and your question needs to be 5 to 100 characters long.");
+      socket.emit("error", "That doesn't look like a valid question to us. Please try another :P<br /> Remember, URLs aren't allowed, and your question needs to be 5 to 140 characters long.");
     }
   });
   
