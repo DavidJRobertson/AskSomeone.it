@@ -1,140 +1,136 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>AskSomeone.it</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-  </head>
-  <body>
-    <h1>AskSomeone.it</h1>
-    <div id="error"><h2></h2></div>
-    <div id="feedback"></div>
-    <form id="question-form">
-      <input type="text" id="question-input" autofocus="true" placeholder="Ask a question..."></input>
-      <input type="button" value="Send question" id="send-q"></input> 
-    </form>
-    
-    <form id="answer-form" hidden="true">
-      <h3 id="question-to-answer"></h3>
-      <input type="text" id="answer-input" placeholder="Write your answer here"></input>
-      <input type="button" value="Send answer" id="send-a"></input> 
-    </form>
-    
-    
-    <div id="resultpane" hidden="true">
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Your question</th>
-            <th>Their question</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Question</td>
-            <td id="cell-yq"></td>
-            <td id="cell-tq"></td>
-          </tr>
-          <tr>
-            <td>Answer</td>
-            <td id="cell-yqa"></td>
-            <td id="cell-tqa"></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    
-    
-    <script>
-    
-      $(function(){
-        var socket = io.connect();
-        var question;
-        var userid;
-        
-        if (localStorage) {
-          if (localStorage.getItem("userid")) {
-            userid = localStorage.getItem("userid");
-            socket.emit("id", userid);
-          } else {
-            socket.emit("idrequest", "ls");
-            socket.on("id", function(id) {
-              userid = id;
-              localStorage.setItem("userid", userid);
-            });
-          }
-        }
-      
-      
-        $('#question-form').submit(sqhandler);
-        $('#send-q').click(sqhandler);
-        function sqhandler(event) {
-          event.preventDefault();
-          socket.emit("question", $('#question-input').val());
-          $('#question-form').hide();
-          $('#feedback').html("Finding a partner...");
-        }
-        
-        socket.on("question", function (q) {
-          $('#feedback').html("Please answer your partner's question:");
-          question = JSON.parse(q);
-          $('#question-to-answer').text(question.text);
-          $('#answer-form').show();
-          
-          
-          $('#answer-form').submit(sahandler);
-          $('#send-a').click(sahandler);
-        });
-        var sentqa;
-        var recievedqa;
-        var sent = false;
-        function sahandler(event) {
-          event.preventDefault();
-          var anstext = $('#answer-input').val();
-          var qa = {"question": question, "answer": {"text": anstext, "answerer": {"userid": userid}}};
-          sentqa = qa;
-          var qapair = JSON.stringify(qa);
-          socket.emit("answer", qapair);
-          $('#answer-form').hide();
-          $('#feedback').html("Waiting for their answer...");
-          if (sent) {
-            displayResults(sentqa, recievedqa);
-          }
-          sent = true;
-        }
-        
-        socket.on("answer", function(qapair) {
-          recievedqa = JSON.parse(qapair);
-          if (sent == false) {
-            $('#feedback').html("The other person has answered. Hurry up!");
-            sent = true;
-          } else {
-            displayResults(sentqa, recievedqa);
-          }
-        });
-        
-        
-        function displayResults(sent, recieved) {
-          $('#feedback').html("");
-          $('#cell-yq').text(recieved.question.text);
-          $('#cell-yqa').text(recieved.answer.text);
-          $('#cell-tq').text(sent.question.text);
-          $('#cell-tqa').text(sent.answer.text);
-          $('#resultpane').show();
-        }
-        
-        socket.on("error", function(errormessage) {
-          $('#error>h2').text(errormessage);
-        });
-      });
-      
-      
-      
-      
-      
-    </script>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
 
-  </body>
+        <link rel="stylesheet" href="css/normalize.min.css">
+        <link rel="stylesheet" href="css/main.css">
+		    <link href='http://fonts.googleapis.com/css?family=Londrina+Solid' rel='stylesheet' type='text/css'>
+
+        <script src="js/vendor/modernizr-2.6.1-respond-1.1.0.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+    </head>
+    <body>
+       <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="header-container">
+            <header class="wrapper clearfix">
+                <h1 class="title">AskSomeone.It</h1>
+                <nav>
+                    <ul>
+                        <li><a href="#">Best-Of</a></li>
+                        <li><a href="#">Help</a></li>
+                    </ul>
+                </nav>
+            </header>
+        </div>
+        <div class="main-container">
+        	<div class="main app-container">
+        		<h1>Ask questions to strangers!</h1>
+				<div id="hint">Type a question below and hit <strong>Ask!</strong> - a random stranger will answer it!</div>
+        		<!-- ASK FORM -->
+        		<form id="ask">
+       				<div id="input_wrapper_ask" class="input_wrapper">
+        				<div id="input_text_ask" class="input_text">
+        					<input type="text" value="Ask any question..." id="input_textfield_ask" class="inactive"></input>
+        				</div>
+        				<div id="input_submit_ask" class="input_submit">        			
+        					<button id="input_button_ask" class="input_button">Ask!</button>
+        				</div>
+        			</div>
+        		</form>
+        		<!-- ANSWER FORM -->
+        		<form id="answer" style="display:none;">	
+        			<div id="input_wrapper_answer" class="input_wrapper">
+        				<div id="input_text_answer" class="input_text">
+        					<input type="text" value="Enter your answer here..." id="input_textfield_answer" class="inactive"></input>
+        				</div>
+        				<div id="input_submit_answer" class="input_submit">        			
+        					<button id="input_button_answer" class="input_button">Answer!</button>
+        				</div>
+        			</div>
+        		</form>
+        		<!-- RESULT AREA -->
+        		<div id="result_pane" style="display:none;">
+        		  <table style="margin: auto;">
+        		    <tr>
+        		      <th style="text-align: right; width: 45%;">You asked:</th>
+        		      <th style="width: 40px;"></th>
+        		      <th style="text-align: left; width: 45%;">They asked:</th>
+        		    </tr>
+        		    <tr>
+        		      <td id="cell-yq" style="text-align: right;"></td>
+        		      <td></td>
+        		      <td id="cell-tq" style="text-align: left;"></td>
+        		    </tr>
+        		    <tr>
+          		    <th style="text-align: right;">They said:</th>
+          		    <th></th>
+        		      <th style="text-align: left;">You said:</th>      		      
+        		    </tr>
+        		    <tr>
+        		      <td id="cell-yqa" style="text-align: right;"></td>
+        		      <td></td>
+        		      <td id="cell-tqa" style="text-align: left;"></td>
+        		    </tr>
+        		  
+        		  </table>
+        		</div>
+        		
+        		
+        		<div id="agreement">By using this website you agree to <a href="#" id="show_the_rules">the rules.</a></div>
+        		<div id="rules" style="display:none;">
+        			<h1>Rules and Information</h1>
+        			<ul>
+        				<li>Ask weird, interesting questions to strangers.</li>
+        				<li>Your questions/answers are anonymous.</li>
+        				<li>We reserve the right to publish questions/answers given.</li>
+        				<li>We recommend you do not divulge personal information.</li>
+        				<li>You must be at least thirteen years old to use this website.</li>
+        			</ul>
+        		</div>
+        	</div>
+        	<div id="ads-top">
+        		<div id="ad_01" class="ad_landscape" style="width: 728px; height: 90px; background-color: black; margin: 20px auto 20px auto;"></div>
+       		</div>
+            <div class="main wrapper clearfix">
+                <article>
+                    <header>
+                        <h1>What is AskSomeone.It?</h1>
+                        <p>It's a fun way to ask questions and get responses from other random people who are online.</p>
+                    </header>
+                </article>
+            </div> <!-- #main -->
+        </div> <!-- #main-container -->
+
+        <div class="footer-container">
+            <footer class="wrapper">
+                <small>You must be at least 13 years of age to use this website. View our <a href='#'>Privacy Policy</a></small>
+            </footer>
+        </div>
+    	<div id="ads-bottom">
+        	<div id="ad_02" class="ad_landscape" style="width: 728px; height: 90px; background-color: black; margin: 20px auto 20px auto;"></div>
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.0.min.js"><\/script>')</script>
+
+        <script src="js/main.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
 </html>
