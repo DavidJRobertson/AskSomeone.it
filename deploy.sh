@@ -11,10 +11,10 @@ trap 'test -n "$SUCCESS" || echo "  error: aborted"' EXIT
 echo "* Deploying $ENVIRONMENT/$REF"
 
 ssh $USER@$SERVER "cd $DEPLOY_PATH && \
-                   git reset --hard && \
-                   git checkout $REF && \
+                   git reset --hard --quiet && \
+                   git checkout --quiet $REF && \
                    git pull && \
                    npm install && \
-                   /etc/init.d/your_app restart"
+                   /etc/init.d/asksomeone restart"
 
 SUCCESS=true
