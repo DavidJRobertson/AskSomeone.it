@@ -15,6 +15,6 @@ ssh $USER@$SERVER "cd $DEPLOY_PATH && \
                    git checkout --quiet $REF && \
                    git pull && \
                    npm install && \
-                   /etc/init.d/asksomeone restart"
+                   sudo /etc/init.d/asksomeone restart"
 
 SUCCESS=true
