@@ -7,7 +7,7 @@ var check = require('validator').check,
 var static = require("node-static");
 var util   = require("util");
 
-var webroot = './static';
+var webroot = 'static';
 var file = new(static.Server)(webroot, {
   cache: 600
 });
