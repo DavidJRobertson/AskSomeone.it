@@ -23,7 +23,7 @@ rc.on("error", function (err) {
 rc.setnx("useridmax", "0"); // Used for assigning user ids. If first run, set to 0.
 
 if (process.env.NODE_ENV == "production") {
-  app.listen(80, '95.154.250.121');
+  app.listen(80, '95.154.250.172');
 } else {
   app.listen(8080);
 }
