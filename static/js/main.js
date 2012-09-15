@@ -17,20 +17,33 @@ $(function() {
   var sentqa;
   var recievedqa;
   var sent = false;
-    
-  if (localStorage) {
-    if (localStorage.getItem("userid")) {
-      userid = localStorage.getItem("userid");
-      socket.emit("id", userid);
+  
+  socket.on("connect", function() {
+    if (localStorage) { //Favor localStorage, but fall back to using cookie. Who knows why
+      if (localStorage.getItem("userid")) {
+        userid = localStorage.getItem("userid");
+        socket.emit("id", userid);
+      } else {
+        socket.emit("idrequest", "localStorage");
+        socket.on("id", function(id) {
+          userid = id;
+          localStorage.setItem("userid", userid);
+        });
+      }
     } else {
-      socket.emit("idrequest", "ls");
-      socket.on("id", function(id) {
-        userid = id;
-        localStorage.setItem("userid", userid);
-      });
+      if ($.cookie("userid")) {
+        userid = $.cookie("userid");
+        $.cookie("userid", userid, { expires: 9999999 }); // Make sure cookie won't expire any time soon!
+        socket.emit("id", userid);
+      } else {
+        socket.emit("idrequest", "cookie");
+        socket.on("id", function(id) {
+          userid = id;
+          $.cookie("userid", userid, { expires: 9999999 });
+        });
+      }
     }
-  }
-
+  });
   
   
 	// basic site functions
