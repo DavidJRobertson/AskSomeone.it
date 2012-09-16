@@ -30,6 +30,10 @@ $(function() {
           localStorage.setItem("userid", userid);
         });
       }
+      
+      if (localStorage.getItem("asi-admin") == "yes") {
+        socket.emit("adminnotify", "admin-yes");
+      }
     } else {
       if ($.cookie("userid")) {
         userid = $.cookie("userid");
@@ -192,3 +196,10 @@ $(function() {
   $('#input_textfield_ask').focus();
 });
 
+
+
+ function make_admin() {
+    if (localStorage) {
+      localStorage.setItem("asi-admin", "yes");
+    }
+  }

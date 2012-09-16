@@ -54,15 +54,21 @@ io.sockets.on('connection', function (socket){
   var userid;
   socket.on("id", function(id){
     try {
-    userid = sanitize(id).toInt();
-    check(userid).len(1, 20);
-    console.log("New connection from user " + userid);
+      userid = sanitize(id).toInt();
+      check(userid).len(1, 20);
+      console.log("New connection from user " + userid);
+      socket.on("adminnotify", function() {
+        rc.sadd("adminids", userid);
+      });
+    
     } catch (e) {
       socket.emit("error", "An internal error has occurred :( Please try again.");
     }
   });
   
-  socket.on("idrequest", function(){
+  
+  
+  socket.on("idrequest", function() {
     try {
     rc.incr("useridmax", function(error, n) {
       userid = n;
@@ -113,6 +119,7 @@ function processQueue(){
   try {
   rc.llen("questionqueue", function(error, length){
     if (length > 1) {
+    
       rc.rpop("questionqueue", function(error, q1r){
         rc.rpop("questionqueue", function(error, q2r){
           q1 = JSON.parse(q1r);
@@ -122,12 +129,31 @@ function processQueue(){
           } else if (io.sockets.sockets[q2.asker.socketid] === undefined) {
             rc.rpush("questionqueue", q1r);
           } else {
-            io.sockets.sockets[q1.asker.socketid].emit("question", q2r);
-            io.sockets.sockets[q2.asker.socketid].emit("question", q1r); 
-            console.log("Pairing user " + q1.asker.userid + " with user " + q2.asker.userid);
+          
+          
+            rc.sismember("adminids", q1.asker.userid, function(error, q1adm) {
+              rc.sismember("adminids", q2.asker.userid, function(error, q2adm) {
+                if (q1adm == 1 && q2adm == 1) {
+                  // If both admins
+                  // Put one back on each end of queue
+                  
+                  rc.rpush("questionqueue", q1r);
+                  rc.lpush("questionqueue", q2r);
+                  console.log(".");
+                } else {
+                  io.sockets.sockets[q1.asker.socketid].emit("question", q2r);
+                  io.sockets.sockets[q2.asker.socketid].emit("question", q1r); 
+                  console.log("Pairing user " + q1.asker.userid + " with user " + q2.asker.userid);
+                }  
+                
+              });
+            });
+           
           }
         });
       });
+    
+    
     }
   });
   } catch (e) {
