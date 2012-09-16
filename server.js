@@ -139,7 +139,6 @@ function processQueue(){
                   
                   rc.rpush("questionqueue", q1r);
                   rc.lpush("questionqueue", q2r);
-                  console.log(".");
                 } else {
                   io.sockets.sockets[q1.asker.socketid].emit("question", q2r);
                   io.sockets.sockets[q2.asker.socketid].emit("question", q1r); 
