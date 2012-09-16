@@ -94,6 +94,16 @@ io.sockets.on('connection', function (socket){
       
     io.sockets.sockets[qa.question.asker.socketid].emit("answer", qapair);
   });
+  
+  socket.on("answertimeout", function(rq){
+    try {
+      console.log("Recieved answer timeout notification for " + rq);
+      var q = JSON.parse(rq);
+      io.sockets.sockets[q.asker.socketid].emit("error", "You took too long to answer that question and the other user gave up waiting :( Next time, try being a little quicker :)");
+    } catch (e) {
+      // do nothing
+    }
+  });
 });
 
 

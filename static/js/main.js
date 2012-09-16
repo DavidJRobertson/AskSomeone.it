@@ -15,7 +15,7 @@ $(function() {
   var question;
   var userid;
   var sentqa;
-  var recievedqa;
+  var receivedqa;
   var sent = false;
   
   socket.on("connect", function() {
@@ -88,6 +88,7 @@ $(function() {
 		});
 	}
 	
+	var answerwaittimer;
 	function handle_answer_submit(event) {
   	event.preventDefault();
 		$('#answer').slideUp(function() {
@@ -95,29 +96,33 @@ $(function() {
       var qapair = JSON.stringify(sentqa);
       socket.emit("answer", qapair);
       $('#hint').html(LANG_HINT_WAITING_ANSWER);
-      
+      answerwaittimer = setTimeout(function(){
+        $("#optrst").slideDown();
+      }, 30000);
       if (sent) {
-        display_results(sentqa, recievedqa);
+        display_results(sentqa, receivedqa);
       }
       sent = true;
 		});
 	}
-	
+	var received = false;
 	socket.on("answer", function(qapair) {
-    recievedqa = JSON.parse(qapair);
-    
+	  clearTimeout(answerwaittimer);
+    receivedqa = JSON.parse(qapair);
+    received = true;
     if (sent == false) {
       $('#hint').html(LANG_HINT_HURRY_ANSWER + "<br />" + question.text);
       sent = true;
     } else {
-      display_results(sentqa, recievedqa);
+      display_results(sentqa, receivedqa);
     }
   });
   
-  function display_results(sent, recieved) {
+  function display_results(sent, received) {
+ 	  clearTimeout(answerwaittimer);
     $('#hint').html(LANG_HINT_RESULTS);
-    $('#cell-yq').text(recieved.question.text);
-    $('#cell-yqa').text(recieved.answer.text);
+    $('#cell-yq').text(received.question.text);
+    $('#cell-yqa').text(received.answer.text);
     $('#cell-tq').text(sent.question.text);
     $('#cell-tqa').text(sent.answer.text);
     $('#result_pane').slideDown();
@@ -133,14 +138,21 @@ $(function() {
   $('.reattemptbutton').click(reset_app);
   
   function reset_app() {
+    if (sent == true && received == false) {
+      socket.emit("answertimeout", JSON.stringify(question));
+    }
+    
     $(document).off("keypress");
+    $('#optrst').slideUp();
+    $('#ask').slideUp();
+    $('#answer').slideUp();
     $('#error_retry_button').slideUp();
     $('#result_pane').slideUp();
     $('#input_textfield_ask').val("");
-
     $('#input_textfield_answer').val("");
     
     sent = false;
+    received = false;
     
     $('#ask').slideDown();
     $('#hint').html(LANG_HINT_READY);
@@ -148,10 +160,15 @@ $(function() {
     $('#input_textfield_ask').focus();
   }
   
+  
 	socket.on("error", function(errormessage) {
 	  clearTimeout(invitetimer);
+ 	  clearTimeout(answerwaittimer);
     $('#invite_friends_pane').slideUp();
-	  
+	  $('#optrst').slideUp();
+    $('#ask').slideUp();
+    $('#answer').slideUp();
+    
     $('#hint').html(errormessage);
     $('#error_retry_button').slideDown();
     
