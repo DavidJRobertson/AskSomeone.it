@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVER=( 'davidr.me' )
+SERVER=( 'asksomeone.it' )
 DEPLOY_PATH=/server/asksomeone.it
 USER=asksomeone-deploy
 
