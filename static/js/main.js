@@ -84,6 +84,10 @@ $(function() {
         $('#answer').slideDown();
     		$('#hint').html(LANG_HINT_REPLY_PROMPT + "<br />" + question.text);
  		    $('#input_textfield_answer').focus();
+ 		    
+ 		    $.titleAlert("Question Received!", {
+ 		      interval: 1000
+ 		    });
       });
 		});
 	}
@@ -119,6 +123,10 @@ $(function() {
   });
   
   function display_results(sent, received) {
+    $.titleAlert("Answer Received!", {
+ 		  interval: 1000
+ 		});
+  
  	  clearTimeout(answerwaittimer);
     $('#hint').html(LANG_HINT_RESULTS);
     $('#cell-yq').text(received.question.text);
