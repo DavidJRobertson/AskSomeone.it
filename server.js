@@ -137,8 +137,8 @@ function processQueue(){
                   // If both admins
                   // Put one back on each end of queue
                   
-                  rc.rpush("questionqueue", q1r);
-                  rc.lpush("questionqueue", q2r);
+                  rc.lpush("questionqueue", q1r);
+                  rc.rpush("questionqueue", q2r);
                 } else {
                   io.sockets.sockets[q1.asker.socketid].emit("question", q2r);
                   io.sockets.sockets[q2.asker.socketid].emit("question", q1r); 
