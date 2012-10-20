@@ -76,7 +76,7 @@ $(function() {
       invitetimer = setTimeout(function(){
         $('#invite_friends_pane').slideDown();
       }, 20000);
-      
+    adsense_track_conversion()
       
       socket.on("question", function (q) {
         clearTimeout(invitetimer);
@@ -201,5 +201,20 @@ $(function() {
  function make_admin() {
     if (localStorage) {
       localStorage.setItem("asi-admin", "yes");
+    }
+  }
+
+  function adsense_track_conversion() {
+    if (localStorage) {
+      if (!localStorage.getItem("gadw-conv-done"))
+        var google_conversion_id = 998949203;
+        var google_conversion_language = "en";
+        var google_conversion_format = "3";
+        var google_conversion_color = "ffffff";
+        var google_conversion_label = "5lT2CLWWhQQQ04Kr3AM";
+        var google_conversion_value = 0;
+        $jQ.getScript( "http://www.googleadservices.com/pagead/conversion.js" );
+        localStorage.setItem("gadw-conv-done", "yes");
+      }
     }
   }
