@@ -206,7 +206,7 @@ $(function() {
 
   function adsense_track_conversion() {
     if (localStorage) {
-      if (!localStorage.getItem("gadw-conv-done"))
+      if (!localStorage.getItem("gadw-conv-done")) {
         var google_conversion_id = 998949203;
         var google_conversion_language = "en";
         var google_conversion_format = "3";
