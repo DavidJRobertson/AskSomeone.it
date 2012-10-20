@@ -213,7 +213,7 @@ $(function() {
         var google_conversion_color = "ffffff";
         var google_conversion_label = "5lT2CLWWhQQQ04Kr3AM";
         var google_conversion_value = 0;
-        $jQ.getScript( "http://www.googleadservices.com/pagead/conversion.js" );
+        $.getScript( "http://www.googleadservices.com/pagead/conversion.js" );
         localStorage.setItem("gadw-conv-done", "yes");
       }
     }
