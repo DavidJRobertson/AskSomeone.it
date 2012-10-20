@@ -113,7 +113,7 @@ io.sockets.on('connection', function (socket){
 });
 
 
-setInterval(processQueue, 200);
+setInterval(processQueue, 100);
 
 function processQueue(){
   try {
